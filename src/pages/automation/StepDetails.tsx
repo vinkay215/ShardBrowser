@@ -19,6 +19,7 @@ import {
   psCities,
   psResiIsps,
 } from "../../entities/proxyshard";
+import { useTemplates } from "../../entities/template";
 import { SelectField } from "../../shared/ui/SelectField";
 import { NumField } from "../../shared/ui/NumField";
 
@@ -73,6 +74,49 @@ function ProjectField({
         options={[
           { value: "", label: t("stepDetails.pickFlow") },
           ...projects.map((p) => ({ value: p.id, label: p.name })),
+        ]}
+      />
+    </div>
+  );
+}
+
+/** Picks a saved profile template by id, rather than asking for a free-text id.
+ *  The same store backs the profile editor, so templates saved earlier appear here. */
+function TemplateField({
+  block,
+  name,
+  label,
+  onParam,
+}: {
+  block: Block;
+  name: string;
+  label: string;
+  onParam: (id: string, key: string, value: unknown) => void;
+}) {
+  const t = useT();
+  const templates = useTemplates((state) => state.templates);
+  const loaded = useTemplates((state) => state.loaded);
+  const load = useTemplates((state) => state.load);
+  useEffect(() => { void load(); }, [load]);
+
+  const value = String(block.params[name] ?? "");
+  const missing = !!value && loaded && !templates.some((tpl) => tpl.id === value);
+  return (
+    <div className="min-w-0 flex-1">
+      <SelectField
+        aria-label={label}
+        value={value}
+        disabled={!loaded || (templates.length === 0 && !value)}
+        onChange={(v) => onParam(block.id, name, v)}
+        options={[
+          {
+            value: "",
+            label: !loaded ? t("stepDetails.templatesLoading")
+              : templates.length === 0 ? t("stepDetails.templatesEmpty")
+              : t("stepDetails.pickTemplate"),
+          },
+          ...templates.map((tpl) => ({ value: tpl.id, label: tpl.name })),
+          ...(missing ? [{ value, label: t("stepDetails.templateMissing") }] : []),
         ]}
       />
     </div>
@@ -415,6 +459,14 @@ function ParamField({ block, prm, onParam, onSecret }: {
             )}
           </div>,
         )}
+      </div>
+    );
+  }
+  if (prm.kind === "template") {
+    return (
+      <div className="flex flex-col gap-1.5">
+        <span aria-hidden="true" className={CAPTION}>{label}</span>
+        {row(<TemplateField block={block} name={prm.name} label={label} onParam={onParam} />)}
       </div>
     );
   }
