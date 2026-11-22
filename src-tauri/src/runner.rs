@@ -544,6 +544,89 @@ fn make_profile(
     Ok(pm.id)
 }
 
+/// Makes a persistent profile from a saved template. The existing template
+/// fingerprint generator supplies a fresh browser fingerprint; the template
+/// contributes settings, proxy, extensions and tags (never a copied identity).
+async fn make_profile_from_template(
+    template_id: &str,
+    requested_name: &str,
+    requested_folder: &str,
+    notes: &str,
+    ticket: &crate::space::Ticket,
+) -> Result<String> {
+    ticket.still()?;
+    let tpl = crate::space::templates::get(template_id)
+        .with_context(|| format!("saved profile template {template_id} is not available"))?;
+    let (mut cfg, _) = crate::profile_from_template(None, &tpl).map_err(anyhow::Error::msg)?;
+
+    // Match the template HTTP API: the first free "Template N" name, unless
+    // a name was explicitly supplied by this step.
+    let name = if requested_name.trim().is_empty() {
+        let taken: std::collections::HashSet<String> =
+            profile::list_all()?.into_iter().map(|p| p.name).collect();
+        (1..=100_000)
+            .map(|n| format!("{} {n}", tpl.name))
+            .find(|candidate| !taken.contains(candidate))
+            .context("could not find an unused profile name for the template")?
+    } else {
+        requested_name.trim().to_string()
+    };
+    let folder = if requested_folder.trim().is_empty() {
+        tpl.folder.trim()
+    } else {
+        requested_folder.trim()
+    };
+    cfg.insert("name".into(), json!(name));
+    cfg.insert("notes".into(), json!(notes));
+
+    // A template can outlive a proxy or extension. Do not carry references
+    // to assets which are no longer available in this space.
+    let proxies: std::collections::HashSet<String> =
+        crate::space::proxy::list()?.into_iter().map(|p| p.id).collect();
+    let extensions: std::collections::HashSet<String> =
+        crate::space::extensions::list()?.into_iter().map(|e| e.id).collect();
+    let meta = cfg.entry("_meta").or_insert_with(|| json!({}))
+        .as_object_mut().context("fingerprint configuration has no _meta")?;
+    meta.insert("id".into(), json!(""));
+    meta.insert("folder".into(), json!(folder));
+    meta.insert("temporary".into(), json!(false));
+    if meta.get("proxy_id").and_then(Value::as_str).is_some_and(|id| !proxies.contains(id)) {
+        meta.insert("proxy_id".into(), Value::Null);
+    }
+    if let Some(Value::Array(ids)) = meta.get_mut("extensions") {
+        ids.retain(|id| id.as_str().is_some_and(|id| extensions.contains(id)));
+    }
+
+    let stored: profile::StoredProfile = serde_json::from_value(Value::Object(cfg))?;
+    let made = profile::Made {
+        proxy_id: stored.meta.proxy_id.as_deref(),
+        inline_proxy: false,
+        extensions: !stored.meta.extensions.is_empty(),
+    };
+    let door = crate::space::Door("automation_run");
+    profile::check_create(door, ticket, folder, &made)?;
+    let created = profile::save(door, ticket, stored, Default::default()).await?;
+
+    // Keep only tag IDs that are still present in the current space.
+    let known: std::collections::HashSet<String> =
+        crate::space::tags::list()?.tags.into_iter().map(|tag| tag.id).collect();
+    let tags: Vec<String> = tpl.tags.into_iter().filter(|id| known.contains(id)).collect();
+    if !tags.is_empty() {
+        let pairs = std::collections::BTreeMap::from([(created.id.clone(), tags)]);
+        if let Err(error) =
+            crate::space::tags::assign(crate::space::Door("tag_assign"), ticket, pairs).await
+        {
+            // Same behavior as POST /templates/:id/profiles: the profile has
+            // been created, so a tag permission failure must not report that
+            // the whole create failed and provoke duplicate retries.
+            eprintln!("[automation] created profile {} without template tags: {error:#}", created.id);
+        }
+        crate::notify_store_changed("tags");
+    }
+    crate::notify_store_changed("profiles");
+    Ok(created.id)
+}
+
 /// Arithmetic on variables. Values that are not numbers are an error rather
 /// than a silent zero — a total that quietly counted a failed read as nothing
 /// is worse than one that stopped.
@@ -1210,6 +1293,27 @@ async fn run_block(
                 ctx.remember_temp(&id);
             }
             *bound = Bound { id: id.clone(), temporary, mobile: bound_is_mobile(&id) };
+            if let Some(into) = param(p, "into") {
+                vars.insert(check_var_name(into)?, id);
+            }
+            return Ok(Flow::Next);
+        }
+        "profile.fromTemplate" => {
+            let template_id = expand(param(p, "template").context("select a saved profile template")?, vars);
+            if template_id.trim().is_empty() {
+                return Err(anyhow!("select a saved profile template"));
+            }
+            let name = param(p, "name").map(|s| expand(s, vars)).unwrap_or_default();
+            let folder = param(p, "folder").map(|s| expand(s, vars)).unwrap_or_default();
+            let notes = param(p, "notes").map(|s| expand(s, vars)).unwrap_or_default();
+            let id = make_profile_from_template(
+                &template_id, &name, &folder, &notes, &run.space,
+            ).await?;
+            run.log(format!("made profile {id} from saved template {template_id}"));
+            if !bound.id.is_empty() && bound.id != id {
+                cdp::detach(&bound.id);
+            }
+            *bound = Bound { id: id.clone(), temporary: false, mobile: bound_is_mobile(&id) };
             if let Some(into) = param(p, "into") {
                 vars.insert(check_var_name(into)?, id);
             }
