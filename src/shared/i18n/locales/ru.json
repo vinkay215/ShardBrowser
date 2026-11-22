@@ -3564,5 +3564,20 @@
   "proxyPeek.changeIp": "Сменить IP",
   "proxyPeek.ipChanged": "Новый IP: {ip}",
   "proxyPeek.ipNotChanged": "Провайдер принял запрос, но IP пока не сменился",
-  "proxyPeek.changeIpFailed": "Не удалось сменить IP"
+  "proxyPeek.changeIpFailed": "Не удалось сменить IP",
+  "palette.profileFromTemplate.label": "Создать профиль из шаблона",
+  "palette.profileFromTemplate.about": "Создать новый профиль с настройками сохранённого шаблона",
+  "palette.profileFromTemplate.template.label": "Сохранённый шаблон",
+  "palette.profileFromTemplate.name.label": "Имя профиля",
+  "palette.profileFromTemplate.name.hint": "Оставьте пустым для имени по шаблону",
+  "palette.profileFromTemplate.folder.label": "Папка",
+  "palette.profileFromTemplate.folder.hint": "Оставьте пустым, чтобы использовать папку шаблона",
+  "palette.profileFromTemplate.notes.label": "Заметки",
+  "palette.profileFromTemplate.notes.hint": "Необязательные заметки для нового профиля",
+  "palette.profileFromTemplate.into.label": "Сохранить ID профиля в",
+  "palette.profileFromTemplate.into.hint": "Имя переменной (необязательно)",
+  "stepDetails.pickTemplate": "Выберите сохранённый шаблон",
+  "stepDetails.templatesLoading": "Загрузка сохранённых шаблонов…",
+  "stepDetails.templatesEmpty": "Нет сохранённых шаблонов",
+  "stepDetails.templateMissing": "Выбранный шаблон больше не доступен"
 }
