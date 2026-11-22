@@ -603,7 +603,8 @@ async fn make_profile_from_template(
         inline_proxy: false,
         extensions: !stored.meta.extensions.is_empty(),
     };
-    let door = crate::space::Door("automation_run");
+    // Use the same creation permission rule as the template HTTP endpoint.
+    let door = crate::space::Door("POST /templates/:id/profiles");
     profile::check_create(door, ticket, folder, &made)?;
     let created = profile::save(door, ticket, stored, Default::default()).await?;
 
