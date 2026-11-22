@@ -3564,5 +3564,20 @@
   "proxyPeek.changeIp": "Change IP",
   "proxyPeek.ipChanged": "New IP: {ip}",
   "proxyPeek.ipNotChanged": "The provider took the request, but the IP has not changed yet",
-  "proxyPeek.changeIpFailed": "Couldn’t change the IP"
+  "proxyPeek.changeIpFailed": "Couldn’t change the IP",
+  "palette.profileFromTemplate.label": "Create profile from template",
+  "palette.profileFromTemplate.about": "Create a saved profile using an existing configuration template",
+  "palette.profileFromTemplate.template.label": "Saved template",
+  "palette.profileFromTemplate.name.label": "Profile name",
+  "palette.profileFromTemplate.name.hint": "Leave empty to name it after the template",
+  "palette.profileFromTemplate.folder.label": "Folder",
+  "palette.profileFromTemplate.folder.hint": "Leave empty to use the template's folder",
+  "palette.profileFromTemplate.notes.label": "Notes",
+  "palette.profileFromTemplate.notes.hint": "Optional notes for the new profile",
+  "palette.profileFromTemplate.into.label": "Save profile ID as",
+  "palette.profileFromTemplate.into.hint": "Variable name (optional)",
+  "stepDetails.pickTemplate": "Choose a saved template",
+  "stepDetails.templatesLoading": "Loading saved templates…",
+  "stepDetails.templatesEmpty": "No saved templates available",
+  "stepDetails.templateMissing": "Selected template is no longer available"
 }
