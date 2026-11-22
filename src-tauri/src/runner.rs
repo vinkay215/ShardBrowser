@@ -2960,6 +2960,23 @@ mod tests {
         }
     }
 
+    #[tokio::test]
+    async fn a_missing_template_does_not_create_or_bind_a_profile() {
+        let _root = crate::store::test_root("runner-template-missing").with_config();
+        let run = a_run(Vec::new());
+        let mut bound = Bound::default();
+        let mut vars = HashMap::new();
+        let mut ctx = CallCtx::new();
+        let step = block("profile.fromTemplate", json!({ "template": "pt-not-found" }));
+        let error = run_block(&mut bound, &step, &mut vars, &run, &mut ctx)
+            .await
+            .unwrap_err()
+            .to_string();
+        assert!(error.contains("not available"), "{error}");
+        assert!(bound.id.is_empty(), "a failed create must not bind a profile");
+        assert!(profile::list_all().unwrap().is_empty(), "a missing template must not create a profile");
+    }
+
     #[test]
     fn a_chain_is_bounded_and_a_loop_is_named() {
         let mut ctx = CallCtx::new();
