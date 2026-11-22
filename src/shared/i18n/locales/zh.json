@@ -3564,5 +3564,20 @@
   "proxyPeek.changeIp": "更换 IP",
   "proxyPeek.ipChanged": "新 IP：{ip}",
   "proxyPeek.ipNotChanged": "服务商已接受请求，但 IP 尚未变化",
-  "proxyPeek.changeIpFailed": "无法更换 IP"
+  "proxyPeek.changeIpFailed": "无法更换 IP",
+  "palette.profileFromTemplate.label": "从模板创建配置文件",
+  "palette.profileFromTemplate.about": "使用已保存的配置模板创建新的配置文件",
+  "palette.profileFromTemplate.template.label": "已保存的模板",
+  "palette.profileFromTemplate.name.label": "配置文件名称",
+  "palette.profileFromTemplate.name.hint": "留空则根据模板自动命名",
+  "palette.profileFromTemplate.folder.label": "文件夹",
+  "palette.profileFromTemplate.folder.hint": "留空则使用模板的文件夹",
+  "palette.profileFromTemplate.notes.label": "备注",
+  "palette.profileFromTemplate.notes.hint": "新配置文件的可选备注",
+  "palette.profileFromTemplate.into.label": "将配置文件 ID 保存为",
+  "palette.profileFromTemplate.into.hint": "变量名称（可选）",
+  "stepDetails.pickTemplate": "选择已保存的模板",
+  "stepDetails.templatesLoading": "正在加载已保存的模板…",
+  "stepDetails.templatesEmpty": "没有可用的已保存模板",
+  "stepDetails.templateMissing": "所选模板已不存在"
 }
