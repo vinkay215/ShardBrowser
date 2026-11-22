@@ -608,8 +608,9 @@ async fn make_profile_from_template(
     let created = profile::save(door, ticket, stored, Default::default()).await?;
 
     // Keep only tag IDs that are still present in the current space.
-    let known: std::collections::HashSet<String> =
-        crate::space::tags::list()?.tags.into_iter().map(|tag| tag.id).collect();
+    let known: std::collections::HashSet<String> = crate::space::tags::list()
+        .map(|state| state.tags.into_iter().map(|tag| tag.id).collect())
+        .unwrap_or_default();
     let tags: Vec<String> = tpl.tags.into_iter().filter(|id| known.contains(id)).collect();
     if !tags.is_empty() {
         let pairs = std::collections::BTreeMap::from([(created.id.clone(), tags)]);
