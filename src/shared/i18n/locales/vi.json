@@ -3564,5 +3564,20 @@
   "proxyPeek.changeIp": "Đổi IP",
   "proxyPeek.ipChanged": "IP mới: {ip}",
   "proxyPeek.ipNotChanged": "Nhà cung cấp đã nhận yêu cầu nhưng IP chưa thay đổi",
-  "proxyPeek.changeIpFailed": "Không thể đổi IP"
+  "proxyPeek.changeIpFailed": "Không thể đổi IP",
+  "palette.profileFromTemplate.label": "Tạo hồ sơ theo mẫu cấu hình",
+  "palette.profileFromTemplate.about": "Tạo hồ sơ mới bằng mẫu cấu hình đã lưu",
+  "palette.profileFromTemplate.template.label": "Mẫu đã lưu",
+  "palette.profileFromTemplate.name.label": "Tên hồ sơ",
+  "palette.profileFromTemplate.name.hint": "Để trống để đặt tên theo mẫu",
+  "palette.profileFromTemplate.folder.label": "Thư mục",
+  "palette.profileFromTemplate.folder.hint": "Để trống để dùng thư mục trong mẫu",
+  "palette.profileFromTemplate.notes.label": "Ghi chú",
+  "palette.profileFromTemplate.notes.hint": "Ghi chú tùy chọn cho hồ sơ mới",
+  "palette.profileFromTemplate.into.label": "Lưu ID hồ sơ vào",
+  "palette.profileFromTemplate.into.hint": "Tên biến (không bắt buộc)",
+  "stepDetails.pickTemplate": "Chọn mẫu cấu hình đã lưu",
+  "stepDetails.templatesLoading": "Đang tải danh sách mẫu…",
+  "stepDetails.templatesEmpty": "Chưa có mẫu cấu hình nào được lưu",
+  "stepDetails.templateMissing": "Mẫu đã chọn không còn tồn tại"
 }
