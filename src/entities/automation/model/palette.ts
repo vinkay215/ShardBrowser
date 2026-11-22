@@ -98,6 +98,8 @@ export type ParamKind =
   | "resiloc"
   /** A saved project, chosen from a list. */
   | "project"
+  /** An existing saved profile template, selected by its stable id. */
+  | "template"
   /** An entry point inside the project another param names. */
   | "projectStep";
 
@@ -164,6 +166,19 @@ export const PALETTE: Category[] = [
           { name: "platform", label: "palette.profileCreate.platform.label", kind: "select", options: ["", "windows", "macos", "linux", "android"] },
           { name: "proxy", label: "palette.profileCreate.proxy.label", kind: "text", hint: "palette.profileCreate.proxy.hint", secret: true },
           { name: "into", label: "palette.profileCreate.into.label", kind: "text", hint: "palette.profileCreate.into.hint" },
+        ],
+      },
+      {
+        kind: "profile.fromTemplate",
+        icon: UserAdd01Icon,
+        label: "palette.profileFromTemplate.label",
+        about: "palette.profileFromTemplate.about",
+        params: [
+          { name: "template", label: "palette.profileFromTemplate.template.label", kind: "template" },
+          { name: "name", label: "palette.profileFromTemplate.name.label", kind: "text", hint: "palette.profileFromTemplate.name.hint" },
+          { name: "folder", label: "palette.profileFromTemplate.folder.label", kind: "text", hint: "palette.profileFromTemplate.folder.hint" },
+          { name: "notes", label: "palette.profileFromTemplate.notes.label", kind: "text", hint: "palette.profileFromTemplate.notes.hint" },
+          { name: "into", label: "palette.profileFromTemplate.into.label", kind: "text", hint: "palette.profileFromTemplate.into.hint" },
         ],
       },
       {
